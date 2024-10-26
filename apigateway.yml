@@ -25,13 +25,13 @@ Resources:
                   - logs:CreateLogStream
                   - logs:PutLogEvents
                 Resource: arn:aws:logs:*:*:*
-        - PolicyName: APIGatewayInvokePermission
-          PolicyDocument:
-            Version: '2012-10-17'
-            Statement:
-              - Effect: Allow
-                Action: lambda:InvokeFunction
-                Resource: !GetAtt LambdaFunction.Arn
+        # - PolicyName: APIGatewayInvokePermission
+        #   PolicyDocument:
+        #     Version: '2012-10-17'
+        #     Statement:
+        #       - Effect: Allow
+        #         Action: lambda:InvokeFunction
+        #         Resource: !GetAtt LambdaFunction.Arn
 
   # Lambda Function
   LambdaFunction:
