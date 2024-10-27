@@ -1,0 +1,67 @@
+To begin, ensure you have AWS CDK installed:
+
+npm install -g aws-cdk
+
+Then, create a new CDK project:
+
+
+mkdir MyApiProject
+cd MyApiProject
+cdk init app --language typescript
+
+Add the necessary dependencies:
+
+
+npm install @aws-cdk/aws-lambda @aws-cdk/aws-apigateway
+
+After setting up, you can create a Lambda function and API Gateway in the stack file.
+
+
+CDK Stack Code (in lib/my_api_project-stack.ts)
+
+import * as cdk from 'aws-cdk-lib';
+import { Stack, StackProps } from 'aws-cdk-lib';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+import * as apigateway from 'aws-cdk-lib/aws-apigateway';
+import { Construct } from 'constructs';
+
+export class MyApiProjectStack extends Stack {
+  constructor(scope: Construct, id: string, props?: StackProps) {
+    super(scope, id, props);
+
+    // Create the Lambda function
+    const myLambda = new lambda.Function(this, 'MyLambdaFunction', {
+      runtime: lambda.Runtime.NODEJS_18_X,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline(`
+        exports.handler = async function(event) {
+          return {
+            statusCode: 200,
+            body: JSON.stringify("Hello from Lambda!")
+          };
+        };
+      `),
+    });
+
+    // Create the API Gateway REST API
+    const api = new apigateway.RestApi(this, 'MyApiGateway', {
+      restApiName: 'MyAPIGateway',
+      description: 'API Gateway with a Lambda integration',
+    });
+
+    // Create a Lambda integration for the API Gateway
+    const lambdaIntegration = new apigateway.LambdaIntegration(myLambda, {
+      requestTemplates: { 'application/json': '{"statusCode": "200"}' }
+    });
+
+    // Add a new API Gateway resource and method
+    const lambdaResource = api.root.addResource('lambda');
+    lambdaResource.addMethod('GET', lambdaIntegration);
+  }
+}
+
+
+Deploy the Stack
+
+cdk deploy
+
